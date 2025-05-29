@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import LoginImage from "../assets/Login.jpg";
 import { Link } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
+
 function Login() {
   const { loginUser } = useContext(AuthContext);
   const handleSubmit = (e) => {
@@ -15,7 +16,7 @@ function Login() {
   };
   return (
     <>
-      <section className="min-h-screen bg-gradient-to-r from-blue-700 via-blue-800 to-blue-900 flex items-center justify-center py-10">
+      <section className="min-h-screen bg-gradient-to-r from-slate-800 to-slate-950 flex items-center justify-center py-10">
         <div className="max-w-6xl w-full bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="grid md:grid-cols-2">
             {/* Left image (hidden on small screens) */}
@@ -40,7 +41,7 @@ function Login() {
                     <i className="fas fa-dumbbell fa-2x me-3 text-blue-400" />
                   </span>
                   <span className="text-3xl font-bold text-gray-800">
-                    Welcome back 👋
+                    welcome back👋
                   </span>
                 </div>
 
@@ -87,10 +88,7 @@ function Login() {
 
                   <div className="flex justify-between text-sm text-gray-500">
                     <a href="#!" className="hover:underline">
-                      Forgot password?
-                    </a>
-                    <a href="#!" className="hover:underline">
-                      Terms of use
+                      Your dream is happening
                     </a>
                   </div>
 
@@ -102,28 +100,12 @@ function Login() {
                       Register here
                     </Link>
                   </p> */}
-
-                  <a
-                    href="#!"
-                    className="block text-sm text-gray-500 hover:underline mt-2">
-                    Privacy policy
-                  </a>
                 </form>
               </div>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="w-full bg-gray-100 text-center text-md text-gray-600">
-        <div className="w-full bg-black bg-opacity-10 py-4">
-          © 2024 - {new Date().getFullYear()} Copyright:{" "}
-          <a className="text-gray-800 hover:underline" href="#">
-            ZIA
-          </a>
-        </div>
-      </footer>
     </>
   );
 }

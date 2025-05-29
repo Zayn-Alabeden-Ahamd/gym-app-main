@@ -9,6 +9,8 @@ import { AuthProvider } from "./context/AuthContext";
 import HomePage from "./components/HomePage";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
+import Landing from "./components/Landing";
+import Footer from "./components/Footer";
 //import Register from "./components/Register";
 function App() {
   return (
@@ -18,13 +20,14 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
-          {/* <Route path="/Register" element={<Register />} /> */}
 
           {/* Protected Routes */}
           <Route element={<PrivateRoutes />}>
+            <Route path="/Landing" element={<Landing />} />
             <Route path="/HomePage" element={<HomePage />} />
           </Route>
         </Routes>
+        <Footer />
       </AuthProvider>
     </Router>
   );
