@@ -17,8 +17,8 @@ export default function Navbar() {
   const authLinks = [
     { path: "/Landing", label: "GYM😎" },
     { path: "/homepage", label: "Start" },
-    { path: "/exercises", label: "Exercises" },
-    { path: "/diet", label: "Diet" },
+    { path: "/GymEquipment", label: "Exercises" },
+    { path: "/DietSection", label: "Diet" },
     { path: "/contact", label: "Contact Us" },
   ];
 
