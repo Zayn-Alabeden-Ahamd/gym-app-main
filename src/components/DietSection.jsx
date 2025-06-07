@@ -1,71 +1,72 @@
 import React, { useState } from "react";
+import DietGenerator from "./DietGenerator.jsx";
 
 const DietSection = () => {
-  const [activeTab, setActiveTab] = useState("nutritionTips");
+  const [activeTab, setActiveTab] = useState("generatePlan");
 
   const nutritionTips = [
     {
       id: 1,
-      title: "Zinc",
-      content:
-        "Plays an important role in supporting the immune system and wound healing.",
-      icon: "🥦",
-    },
-    {
-      id: 2,
       title: "Adequate Protein",
       content:
-        "Protein is essential for building muscles and repairing tissues. Athletes should consume 1.2 to 2.0 grams per kilogram of body weight per day.",
+        "Essential for muscle repair and growth. Aim for 1.6-2.2g per kg of body weight if you're active.",
       icon: "🍗",
     },
     {
-      id: 3,
+      id: 2,
       title: "Complex Carbohydrates",
       content:
-        "Complex carbohydrates provide sustained energy and are found in whole grains and vegetables.",
+        "Choose whole grains like oats, brown rice, and quinoa for sustained energy release.",
       icon: "🌾",
     },
     {
-      id: 4,
+      id: 3,
       title: "Healthy Fats",
       content:
-        "Monounsaturated and polyunsaturated fats support heart and brain health. Found in avocados, nuts, and olive oil.",
+        "Incorporate sources like avocados, nuts, and olive oil for hormone regulation and overall health.",
       icon: "🥑",
     },
     {
-      id: 5,
-      title: "Essential Vitamins",
+      id: 4,
+      title: "Hydration is Key",
       content:
-        "Vitamins A, C, D, and E boost immunity and promote skin and bone health.",
-      icon: "🍇🥭",
-    },
-    {
-      id: 6,
-      title: "Calcium",
-      content: "Essential for bones, teeth, muscles, and nerve function.",
-      icon: "🥚🥛",
-    },
-    {
-      id: 7,
-      title: "Salts",
-      content:
-        "Salts maintain fluid balance and support heart and bone health. Found in fruits, vegetables, and nuts.",
-      icon: "🧂",
-    },
-    // بيانات جديدة:
-    {
-      id: 8,
-      title: "Hydration",
-      content:
-        "Drinking enough water is crucial for optimal muscle function and recovery.",
+        "Water is crucial for performance, digestion, and nutrient transport. Don't wait until you're thirsty to drink.",
       icon: "💧",
     },
     {
-      id: 9,
-      title: "Fiber",
+      id: 5,
+      title: "Micronutrients Matter",
       content:
-        "Dietary fiber supports digestion and helps maintain blood sugar levels.",
+        "Eat a variety of colorful fruits and vegetables to get essential vitamins and minerals.",
+      icon: "🍇🥦",
+    },
+    {
+      id: 6,
+      title: "Time Your Nutrients",
+      content:
+        "Consume a mix of protein and carbs 1-2 hours before and after your workouts to maximize recovery and performance.",
+      icon: "⏱️",
+    },
+    {
+      id: 7,
+      title: "Don't Forget Fiber",
+      content:
+        "Fiber from vegetables, fruits, and legumes supports a healthy gut and aids in digestion.",
       icon: "🥕",
+    },
+    {
+      id: 8,
+      title: "Limit Processed Foods",
+      content:
+        "Minimize intake of sugary drinks, refined grains, and heavily processed snacks to improve body composition and health.",
+      icon: "🚫🍔",
+    },
+    {
+      id: 9,
+      title: "Get Enough Iron",
+      content:
+        "Iron is critical for carrying oxygen to your muscles. Good sources include lean red meat, spinach, and lentils.",
+      icon: "🥬",
     },
   ];
 
@@ -74,138 +75,148 @@ const DietSection = () => {
       id: 1,
       time: "Breakfast",
       meals: [
-        "Include carbs, protein, and healthy fats to start your day right.",
+        "Scrambled eggs with spinach and a slice of whole-wheat toast.",
+        "Oatmeal with berries, walnuts, and a scoop of protein powder.",
+        "Greek yogurt with granola and a drizzle of honey.",
       ],
     },
     {
       id: 2,
-      time: "Snack",
+      time: "Lunch",
       meals: [
-        "A handful of nuts or a banana to maintain energy.",
-        "Apple slices or yogurt with berries.",
+        "Grilled chicken salad with mixed greens, cherry tomatoes, and a light vinaigrette.",
+        "Quinoa bowl with black beans, corn, avocado, and lime.",
+        "Tuna salad (made with Greek yogurt) sandwich on whole-grain bread.",
       ],
     },
     {
       id: 3,
-      time: "Lunch",
+      time: "Dinner",
       meals: [
-        "Grilled chicken breast with brown rice and steamed vegetables.",
-        "Tuna salad with olive oil and mixed greens.",
+        "Baked salmon with roasted asparagus and sweet potato wedges.",
+        "Lean ground turkey stir-fry with broccoli, bell peppers, and brown rice.",
+        "Lentil soup with a side of whole-grain bread.",
       ],
     },
     {
       id: 4,
-      time: "Dinner",
+      time: "Snacks",
       meals: [
-        "Grilled salmon with roasted broccoli.",
-        "Quinoa with grilled tofu and salad.",
-      ],
-    },
-    // بيانات جديدة:
-    {
-      id: 5,
-      time: "Post-Workout",
-      meals: [
-        "Protein shake with banana and almond milk.",
+        "Apple slices with two tablespoons of peanut butter.",
+        "A handful of almonds or walnuts.",
         "Cottage cheese with pineapple chunks.",
       ],
     },
     {
+      id: 5,
+      time: "Post-Workout",
+      meals: [
+        "Protein shake with one banana and almond milk.",
+        "Chocolate milk.",
+        "A small bowl of Greek yogurt with fruit.",
+      ],
+    },
+    {
       id: 6,
-      time: "Late Snack",
-      meals: ["Mixed nuts and seeds.", "Carrot sticks with hummus."],
+      time: "Pre-Workout (Light)",
+      meals: [
+        "A small banana.",
+        "A rice cake with a thin layer of honey.",
+        "A small cup of black coffee.",
+      ],
     },
   ];
 
   const recipes = [
     {
       id: 1,
-      name: "Protein Smoothie",
+      name: "Protein Power Smoothie",
       ingredients: [
+        "1 scoop chocolate protein powder",
         "1 banana",
         "1 cup almond milk",
-        "1 scoop protein powder",
-        "1 tbsp peanut butter",
-        "Ice cubes",
+        "1 tbsp almond butter",
+        "Handful of spinach",
       ],
       instructions: [
         "Place all ingredients in a blender.",
         "Blend until smooth.",
-        "Serve chilled.",
+        "Serve immediately for a quick post-workout meal.",
       ],
     },
     {
       id: 2,
-      name: "Vegetable Lentil Soup",
+      name: "Quick Lentil Soup",
       ingredients: [
-        "1 cup lentils",
-        "1 chopped onion",
-        "2 carrots",
-        "2 celery sticks",
-        "1 potato",
-        "4 cups broth",
+        "1 tbsp olive oil",
+        "1 onion, chopped",
+        "2 carrots, chopped",
+        "1 cup red lentils, rinsed",
+        "4 cups vegetable broth",
         "1 tsp cumin",
       ],
       instructions: [
-        "Sauté onions and garlic in olive oil.",
-        "Add veggies, lentils, and broth.",
-        "Simmer for 25-30 mins. Serve warm.",
+        "Sauté onion and carrots in oil until soft.",
+        "Add lentils, broth, and cumin.",
+        "Bring to a boil, then simmer for 20-25 minutes until lentils are tender.",
       ],
     },
     {
       id: 3,
-      name: "Quinoa Salad",
+      name: "Sheet Pan Lemon Herb Chicken",
       ingredients: [
-        "1 cup quinoa",
-        "2 cups water",
-        "Chopped vegetables",
-        "Olive oil",
-        "Lemon juice",
-        "Salt & pepper",
+        "2 chicken breasts, cut into chunks",
+        "1 head of broccoli, cut into florets",
+        "1 red bell pepper, sliced",
+        "2 tbsp olive oil",
+        "1 tsp dried oregano",
+        "Juice of 1 lemon",
       ],
       instructions: [
-        "Cook quinoa and cool.",
-        "Mix with vegetables.",
-        "Add dressing and serve chilled.",
+        "Preheat oven to 200°C (400°F).",
+        "Toss chicken and veggies with olive oil, oregano, salt, and pepper on a baking sheet.",
+        "Bake for 20-25 minutes, or until chicken is cooked through.",
+        "Squeeze lemon juice over everything before serving.",
       ],
     },
-    // بيانات جديدة:
     {
       id: 4,
-      name: "Avocado Toast",
+      name: "Overnight Oats",
       ingredients: [
-        "2 slices whole-grain bread",
-        "1 ripe avocado",
-        "Salt and pepper",
-        "Chili flakes (optional)",
-        "Lemon juice",
+        "1/2 cup rolled oats",
+        "1/2 cup milk (any kind)",
+        "1/4 cup Greek yogurt",
+        "1 tbsp chia seeds",
+        "1 tbsp maple syrup",
+        "Your favorite fruit for topping",
       ],
       instructions: [
-        "Toast the bread slices.",
-        "Mash avocado with salt, pepper, and lemon juice.",
-        "Spread avocado mix on toast and sprinkle chili flakes if desired.",
-        "Serve immediately.",
+        "In a jar, mix oats, milk, yogurt, chia seeds, and syrup.",
+        "Stir well, cover, and refrigerate overnight.",
+        "In the morning, stir again and top with fresh fruit.",
       ],
     },
     {
       id: 5,
-      name: "Chia Seed Pudding",
+      name: "Simple Quinoa Salad",
       ingredients: [
-        "3 tbsp chia seeds",
-        "1 cup almond milk",
-        "1 tsp honey",
-        "Fresh berries for topping",
+        "1 cup cooked quinoa, cooled",
+        "1 can (15oz) chickpeas, rinsed",
+        "1 cucumber, diced",
+        "1/2 red onion, finely chopped",
+        "Feta cheese (optional)",
+        "Dressing: Olive oil, lemon juice, salt, pepper",
       ],
       instructions: [
-        "Mix chia seeds with almond milk and honey.",
-        "Refrigerate overnight.",
-        "Top with fresh berries before serving.",
+        "In a large bowl, combine quinoa, chickpeas, cucumber, and red onion.",
+        "In a small bowl, whisk together dressing ingredients.",
+        "Pour dressing over the salad and toss to combine. Add feta cheese if desired.",
       ],
     },
   ];
 
   return (
-    <div className="p-8 font-['Tajawal'] text-slate-300 bg-slate-950 rounded-md">
+    <div className="p-8 font-['Tajawal'] text-slate-300 bg-slate-950 rounded-md min-h-screen">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl text-white mb-4">
           Sport Diet Plan
@@ -217,15 +228,17 @@ const DietSection = () => {
 
       <div className="flex justify-center flex-wrap gap-4 mb-8">
         {[
-          { key: "nutritionTips", label: "Dietary Advice" },
-          { key: "mealPlans", label: "Meal Suggestions" },
-          { key: "recipes", label: "Healthy Recipes" },
+          // إضافة الزر الجديد في البداية
+          { key: "generatePlan", label: "Plangenerater" },
+          { key: "nutritionTips", label: "nutritionTips" },
+          { key: "mealPlans", label: "mealPlans" },
+          { key: "recipes", label: "recipes" },
         ].map(({ key, label }) => (
           <button
             key={key}
             className={`py-2 px-6 rounded-full text-base sm:text-lg font-semibold transition-all duration-300 ${
               activeTab === key
-                ? "bg-blue-800 text-white"
+                ? "bg-blue-800 text-white shadow-lg shadow-blue-800/20"
                 : "bg-slate-800 text-slate-300 hover:bg-slate-700"
             }`}
             onClick={() => setActiveTab(key)}>
@@ -234,72 +247,74 @@ const DietSection = () => {
         ))}
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {activeTab === "nutritionTips" &&
-          nutritionTips.map((tip) => (
-            <div
-              key={tip.id}
-              className="bg-slate-900 rounded-xl p-6 text-center hover:shadow-lg transition duration-300">
-              <div className="text-4xl mb-4">{tip.icon}</div>
-              <h3 className="text-slate-100 font-semibold text-lg mb-2">
-                {tip.title}
-              </h3>
-              <p className="text-slate-400 text-sm">{tip.content}</p>
-            </div>
-          ))}
+      {/* منطقة عرض المحتوى المتغير */}
+      <div className="mt-8">
+        {activeTab === "generatePlan" && <DietGenerator />}
 
-        {activeTab === "mealPlans" &&
-          mealPlans.map((plan) => (
-            <div
-              key={plan.id}
-              className="bg-slate-900 rounded-xl p-6 shadow-sm">
-              <h2 className="text-blue-400 text-xl mb-4 border-b border-slate-700 pb-2 text-center">
-                {plan.time}
-              </h2>
-              <ul className="text-slate-300 text-sm space-y-2">
-                {plan.meals.map((meal, index) => (
-                  <li
-                    key={index}
-                    className="border-b border-dashed border-slate-800 pb-2 last:border-b-0">
-                    {meal}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+        {activeTab === "nutritionTips" && (
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 animate-fade-in">
+            {nutritionTips.map((tip) => (
+              <div
+                key={tip.id}
+                className="bg-slate-900 rounded-xl p-6 text-center hover:shadow-lg transition duration-300 hover:scale-105">
+                <div className="text-4xl mb-4">{tip.icon}</div>
+                <h3 className="text-slate-100 font-semibold text-lg mb-2">
+                  {tip.title}
+                </h3>
+                <p className="text-slate-400 text-sm">{tip.content}</p>
+              </div>
+            ))}
+          </div>
+        )}
 
-        {activeTab === "recipes" &&
-          recipes.map((recipe) => (
-            <div
-              key={recipe.id}
-              className="bg-slate-900 rounded-xl p-6 shadow-sm">
-              <h2 className="text-red-400 text-xl font-bold mb-4 text-center">
-                {recipe.name}
-              </h2>
-              <div className="flex flex-col gap-4 text-slate-300 text-sm">
-                <div>
-                  <h3 className="text-slate-100 font-semibold mb-2">
-                    Ingredients:
-                  </h3>
-                  <ul className="list-disc list-inside space-y-1">
-                    {recipe.ingredients.map((ingredient, index) => (
-                      <li key={index}>{ingredient}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="text-slate-100 font-semibold mb-2">
-                    Instructions:
-                  </h3>
-                  <ul className="list-decimal list-inside space-y-1">
-                    {recipe.instructions.map((step, index) => (
-                      <li key={index}>{step}</li>
-                    ))}
-                  </ul>
+        {activeTab === "mealPlans" && (
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 animate-fade-in">
+            {mealPlans.map((plan) => (
+              <div
+                key={plan.id}
+                className="bg-slate-900 rounded-xl p-6 shadow-sm">
+                <h2 className="text-blue-400 text-xl mb-4 border-b border-slate-700 pb-2 text-center">
+                  {plan.time}
+                </h2>
+                <ul className="text-slate-300 text-sm space-y-2">
+                  {plan.meals.map((meal, index) => (
+                    <li
+                      key={index}
+                      className="border-b border-dashed border-slate-800 pb-2 last:border-b-0">
+                      {meal}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === "recipes" && (
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 animate-fade-in">
+            {recipes.map((recipe) => (
+              <div
+                key={recipe.id}
+                className="bg-slate-900 rounded-xl p-6 shadow-sm">
+                <h2 className="text-red-400 text-xl font-bold mb-4 text-center">
+                  {recipe.name}
+                </h2>
+                <div className="flex flex-col gap-4 text-slate-300 text-sm">
+                  <div>
+                    <h3 className="text-slate-100 font-semibold mb-2">
+                      Ingredients:
+                    </h3>
+                    <ul className="list-disc list-inside space-y-1">
+                      {recipe.ingredients.map((ingredient, index) => (
+                        <li key={index}>{ingredient}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="text-center mt-12 pt-6 border-t border-slate-800 text-slate-500 text-sm">
