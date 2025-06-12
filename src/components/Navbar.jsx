@@ -19,7 +19,7 @@ export default function Navbar() {
     { path: "/homepage", label: "Start" },
     { path: "/GymEquipment", label: "Exercises" },
     { path: "/DietSection", label: "Diet" },
-    { path: "/contact", label: "Contact Us" },
+    { path: "/Contact", label: "Contact Us" },
   ];
 
   return (

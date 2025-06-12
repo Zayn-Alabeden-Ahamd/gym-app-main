@@ -13,7 +13,7 @@ import Landing from "./components/Landing";
 import Footer from "./components/Footer";
 import GymEquipment from "./components/GymEquipment";
 import DietSection from "./components/DietSection";
-//import Register from "./components/Register";
+import Contact from "./components/Contact";
 
 function App() {
   return (
@@ -31,6 +31,7 @@ function App() {
             <Route path="/GymEquipment" element={<GymEquipment />} />
 
             <Route path="/DietSection" element={<DietSection />} />
+            <Route path="/Contact" element={<Contact />} />
           </Route>
         </Routes>
         <Footer />
