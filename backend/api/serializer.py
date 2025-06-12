@@ -16,12 +16,11 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # إزالة username وإضافة email
         self.fields['email'] = serializers.EmailField()
         if 'username' in self.fields:
             self.fields.pop('username')
 
-    @classmethod
+   
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)

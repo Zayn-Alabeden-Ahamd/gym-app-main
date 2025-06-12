@@ -228,7 +228,6 @@ const DietSection = () => {
 
       <div className="flex justify-center flex-wrap gap-4 mb-8">
         {[
-          // إضافة الزر الجديد في البداية
           { key: "generatePlan", label: "Plangenerater" },
           { key: "nutritionTips", label: "nutritionTips" },
           { key: "mealPlans", label: "mealPlans" },
@@ -247,7 +246,7 @@ const DietSection = () => {
         ))}
       </div>
 
-      {/* منطقة عرض المحتوى المتغير */}
+      {/* هون بتتولد البرامج*/}
       <div className="mt-8">
         {activeTab === "generatePlan" && <DietGenerator />}
 
