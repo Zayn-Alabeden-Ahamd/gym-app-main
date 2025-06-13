@@ -1,9 +1,6 @@
-// src/components/DietGenerator.js
-
 import React, { useState } from "react";
-import { foods } from "../utils/diet.js"; // Make sure the path is correct
+import { foods } from "../utils/diet.js";
 
-// Helper function to get a random item from an array
 const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 const DietGenerator = () => {
@@ -12,43 +9,83 @@ const DietGenerator = () => {
   const [generatedPlan, setGeneratedPlan] = useState(null);
 
   const handleGeneratePlan = () => {
-    // Filter foods by category
+    if (targetCalories <= 0) {
+      setGeneratedPlan(null);
+      return;
+    }
+
     const proteins = foods.filter((f) => f.category === "Protein");
     const carbs = foods.filter((f) => f.category === "Carbohydrate");
     const veggies = foods.filter((f) => f.category === "Vegetable");
 
-    const mealNames = [
-      "Breakfast",
-      "Lunch",
-      "Dinner",
-      "Snack 1",
-      "Snack 2",
-      "Post-Workout",
-    ];
+    if (!proteins.length || !carbs.length || !veggies.length) {
+      alert("Food data is missing for one or more categories.");
+      return;
+    }
 
     let newPlan = {
       meals: [],
       totals: { calories: 0, protein: 0, carbs: 0, fats: 0 },
     };
 
+    const caloriesPerMeal = targetCalories / numMeals;
+
     for (let i = 0; i < numMeals; i++) {
-      let meal = {
-        name: mealNames[i] || `Meal ${i + 1}`,
+      const meal = {
+        name:
+          ["Breakfast", "Lunch", "Dinner", "Snack 1", "Snack 2"][i] ||
+          `Meal ${i + 1}`,
         items: [],
         totals: { calories: 0, protein: 0, carbs: 0, fats: 0 },
       };
 
-      // Simple algorithm: pick one from each core category
-      const proteinChoice = getRandomItem(proteins);
-      meal.items.push(proteinChoice);
+      let currentMealCalories = 0;
 
-      const carbChoice = getRandomItem(carbs);
-      meal.items.push(carbChoice);
+      const findAndAddFood = (category, remainingCalories) => {
+        const suitableFoods = category.filter(
+          (food) => food.calories <= remainingCalories
+        );
+        let foodToAdd;
+        if (suitableFoods.length > 0) {
+          // إذا وجدنا أطعمة مناسبة، نختار واحدًا عشوائيًا
+          foodToAdd = getRandomItem(suitableFoods);
+        } else {
+          // إذا لم نجد، نختار أصغر طعام في الفئة لتجاوز الهدف بأقل قدر ممكن
+          foodToAdd = [...category].sort((a, b) => a.calories - b.calories)[0];
+        }
 
-      const veggieChoice = getRandomItem(veggies);
-      meal.items.push(veggieChoice);
+        if (foodToAdd) {
+          meal.items.push(foodToAdd);
+          currentMealCalories += foodToAdd.calories;
+        }
+      };
 
-      // Calculate totals for the meal and the full plan
+      // 1. نبدأ بإضافة عنصر أساسي من كل فئة بحذر
+      findAndAddFood(proteins, caloriesPerMeal - currentMealCalories);
+      findAndAddFood(carbs, caloriesPerMeal - currentMealCalories);
+      findAndAddFood(veggies, caloriesPerMeal - currentMealCalories);
+
+      // 2. الآن نملأ السعرات المتبقية
+      let attempts = 0; // للحماية من الحلقات اللانهائية
+      while (currentMealCalories < caloriesPerMeal && attempts < 20) {
+        const remainingCalories = caloriesPerMeal - currentMealCalories;
+        // نبحث في كل الأطعمة عن شيء مناسب للمساحة المتبقية
+        const candidateFoods = foods.filter(
+          (food) => food.calories <= remainingCalories
+        );
+
+        if (candidateFoods.length === 0) {
+          // لا يوجد طعام صغير بما يكفي، نخرج من الحلقة
+          break;
+        }
+
+        const nextFood = getRandomItem(candidateFoods);
+        meal.items.push(nextFood);
+        currentMealCalories += nextFood.calories;
+        attempts++;
+      }
+
+      // 3. نحسب المجاميع النهائية للوجبة
       meal.items.forEach((item) => {
         meal.totals.calories += item.calories;
         meal.totals.protein += item.protein;
@@ -56,6 +93,7 @@ const DietGenerator = () => {
         meal.totals.fats += item.fats;
       });
 
+      // إضافة الوجبة إلى الخطة الكاملة
       newPlan.meals.push(meal);
       newPlan.totals.calories += meal.totals.calories;
       newPlan.totals.protein += meal.totals.protein;
@@ -79,8 +117,9 @@ const DietGenerator = () => {
             type="number"
             id="calories"
             step="50"
+            min="1200"
             value={targetCalories}
-            onChange={(e) => setTargetCalories(parseInt(e.target.value))}
+            onChange={(e) => setTargetCalories(parseInt(e.target.value) || 0)}
             className="bg-slate-900 border border-slate-700 rounded-md p-3 w-full text-white text-center text-lg font-bold"
           />
         </div>
@@ -110,10 +149,14 @@ const DietGenerator = () => {
 
       {generatedPlan && (
         <div className="animate-fade-in">
-          {/* Summary Section */}
           <div className="text-center mb-8">
             <h2 className="text-2xl text-white mb-4">Proposed Plan Summary</h2>
+            <p className="text-sm text-slate-500 mb-4">
+              Target was {targetCalories} calories. The generated plan is the
+              closest approximation.
+            </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              {/* Totals Display remains the same */}
               <div className="bg-slate-800 p-4 rounded-lg">
                 <div className="text-3xl font-bold text-blue-400">
                   {Math.round(generatedPlan.totals.calories)}
@@ -141,7 +184,6 @@ const DietGenerator = () => {
             </div>
           </div>
 
-          {/* Meals Section */}
           <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-6">
             {generatedPlan.meals.map((meal, index) => (
               <div
@@ -151,8 +193,10 @@ const DietGenerator = () => {
                   {meal.name}
                 </h3>
                 <ul className="space-y-3 flex-grow">
-                  {meal.items.map((item) => (
-                    <li key={item.id} className="text-sm flex justify-between">
+                  {meal.items.map((item, itemIndex) => (
+                    <li
+                      key={`${item.id}-${itemIndex}`}
+                      className="text-sm flex justify-between">
                       <span>
                         {item.name}{" "}
                         <span className="text-xs text-slate-500">
