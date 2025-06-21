@@ -104,7 +104,8 @@ const GymEquipment = () => {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-12 bg-slate-950 text-white">
+    // تم تعديل الخلفية هنا
+    <div className="flex flex-col items-center justify-center min-h-screen py-12 bg-gradient-to-r from-slate-800 to-slate-950 text-white">
       <div className="max-w-[1400px] mx-auto px-8 py-12 font-['Segoe_UI'] my-[100px] text-center md:px-4">
         <h1 className="text-center text-white-400 text-5xl mb-3 font-bold md:text-4xl">
           Our Premium Gym Equipment
@@ -113,7 +114,6 @@ const GymEquipment = () => {
           Train with professional-grade tools for optimal results
         </p>
 
-        {/* تم تعديل عدد الأعمدة على الشاشات الكبيرة 'lg:grid-cols-3' */}
         <div className="grid grid-cols-auto-fill-300 gap-10 lg:grid-cols-3 md:grid-cols-1">
           {equipmentList.map((equipment) => (
             <div

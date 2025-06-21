@@ -15,43 +15,74 @@ import GymEquipment from "./components/GymEquipment";
 import DietSection from "./components/DietSection";
 import Contact from "./components/Contact";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 
 function App() {
+  // initial Route بيتبدل حسب حاله ال توكن
+  const [initialRoute, setInitialRoute] = useState(null);
+  const [isCheckingToken, setIsCheckingToken] = useState(true);
+
   useEffect(() => {
-    const accessToken = localStorage.getItem("authTokens")
-      ? JSON.parse(localStorage.getItem("authTokens")).access
-      : null;
+    const authTokens = localStorage.getItem("authTokens");
+    const accessToken = authTokens ? JSON.parse(authTokens).access : null;
 
     if (!accessToken) {
-      // لا يوجد توكن، لا تفعل شيئًا
+      setInitialRoute("/login");
+      setIsCheckingToken(false);
       return;
     }
 
     try {
       const decodedToken = jwtDecode(accessToken);
-
-      if (decodedToken.exp < Date.now() / 1000) {
-        console.log("Token is expired, Logging out.");
-
+      const isExpired = decodedToken.exp < Date.now() / 1000;
+      if (isExpired) {
+        console.log("Token is expired, Redirecting to login.");
         localStorage.removeItem("authTokens");
-
-        window.location.href = "/login";
+        setInitialRoute("/login"); // التوكن منتهي، الوجهة هي /login
+      } else {
+        console.log("Token is valid, Redirecting to Landing.");
+        setInitialRoute("/Landing"); // التوكن فعال، الوجهة هي /Landing
       }
     } catch (error) {
-      console.error("Token is invalid , Logging out.", error);
+      console.error(
+        "Token is invalid or corrupted, Redirecting to login.",
+        error
+      );
       localStorage.removeItem("authTokens");
-      window.location.href = "/login";
+      setInitialRoute("/login");
+    } finally {
+      setIsCheckingToken(false);
     }
   }, []);
+
+  // إذا كانت الحالة لا تزال تتحقق من التوكن، لا تعرض أي شيء أو اعرض شاشة تحميل
+  if (isCheckingToken) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          fontSize: "2em",
+        }}>
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <Router>
       <AuthProvider>
         <Navbar />
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          {/* توجيه المسار الرئيسي بناءً على initialRoute */}
+          {/* replace تقوم باستبدال الإدخال الحالي في سجل المتصفح (browser history stack) بالمسار الجديد الذي يتم التوجيه إليه، بدلاً من إضافة إدخال جديد. */}
+          {initialRoute && (
+            <Route path="/" element={<Navigate to={initialRoute} replace />} />
+          )}
+
           <Route path="/login" element={<Login />} />
 
           <Route element={<PrivateRoutes />}>

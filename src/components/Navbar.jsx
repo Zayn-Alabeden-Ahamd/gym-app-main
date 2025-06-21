@@ -17,7 +17,7 @@ export default function Navbar() {
   const authLinks = [
     { path: "/Landing", label: "GYM😎" },
     { path: "/homepage", label: "Start" },
-    { path: "/GymEquipment", label: "Exercises" },
+    { path: "/GymEquipment", label: "Equipments" },
     { path: "/DietSection", label: "Diet" },
     { path: "/Contact", label: "Contact Us" },
   ];
@@ -31,8 +31,8 @@ export default function Navbar() {
           <span className="font-bold text-3xl">GymFit</span>
         </div>
 
-        {/* Hamburger Button */}
-        <div className="md:hidden">
+        {/* Hamburger Button - يظهر على الشاشات الأقل من lg */}
+        <div className="lg:hidden">
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="text-white focus:outline-none cursor-pointer">
@@ -53,7 +53,7 @@ export default function Navbar() {
         </div>
 
         {/* Desktop Menu */}
-        <ul className="hidden md:flex space-x-8 text-lg items-center">
+        <ul className="hidden lg:flex space-x-8 text-lg items-center">
           {(user ? authLinks : guestLinks).map((link, i) => (
             <li key={i}>
               <Link
@@ -64,22 +64,31 @@ export default function Navbar() {
             </li>
           ))}
           {user && (
-            <li>
-              <button
-                onClick={logoutUser}
-                className="bg-red-500 hover:bg-red-600 px-4 py-1 rounded text-white transition">
-                Log Out
-              </button>
-            </li>
+            <>
+              <li className="text-blue-300 font-semibold">
+                Hello, {user.username || user.email} ❤️{" "}
+              </li>
+              <li>
+                <button
+                  onClick={logoutUser}
+                  className="bg-red-500 hover:bg-red-600 px-4 py-1 rounded text-white transition">
+                  Log Out
+                </button>
+              </li>
+            </>
           )}
         </ul>
       </div>
 
       {/* Mobile Menu */}
       {isOpen && (
-        <ul className="flex flex-col space-y-4 mt-4 md:hidden text-lg">
+        <ul className="flex flex-col space-y-4 mt-4 lg:hidden text-lg w-full items-center">
+          {" "}
+          {/* أضف w-full و items-center هنا */}
           {(user ? authLinks : guestLinks).map((link, i) => (
-            <li key={i}>
+            <li key={i} className="w-full text-center">
+              {" "}
+              {/* أضف w-full و text-center هنا */}
               <Link
                 to={link.path}
                 className="hover:text-blue-400 transition cursor-pointer block">
@@ -88,13 +97,23 @@ export default function Navbar() {
             </li>
           ))}
           {user && (
-            <li>
-              <button
-                onClick={logoutUser}
-                className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-white transition w-full text-left">
-                Log Out
-              </button>
-            </li>
+            <>
+              {/* عرض اسم المستخدم هنا في قائمة الموبايل */}
+              <li className="text-blue-300 font-semibold w-full text-center">
+                {" "}
+                {/* عدّل text-left إلى text-center */}
+                Hello, {user.username || user.email}!{" "}
+              </li>
+              <li className="w-full flex justify-center">
+                {" "}
+                {/* اجعل الـ li بعرض كامل ووسّط محتواها باستخدام flex */}
+                <button
+                  onClick={logoutUser}
+                  className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-white transition">
+                  Log Out
+                </button>
+              </li>
+            </>
           )}
         </ul>
       )}

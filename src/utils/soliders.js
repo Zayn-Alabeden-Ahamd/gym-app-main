@@ -8,6 +8,7 @@ export const TEMPOS = [
   "2 1 1",
 ];
 
+// 3 option
 export const SCHEMES = {
   strength_power: {
     repRanges: [3, 8],
@@ -26,6 +27,7 @@ export const SCHEMES = {
   },
 };
 
+// 1  , 2 opttions
 export const WORKOUTS = {
   individual: [
     "biceps",

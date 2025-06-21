@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { foods } from "../utils/diet.js";
+import React, { useEffect, useState } from "react";
 
 const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
@@ -7,19 +6,97 @@ const DietGenerator = () => {
   const [targetCalories, setTargetCalories] = useState(2000);
   const [numMeals, setNumMeals] = useState(3);
   const [generatedPlan, setGeneratedPlan] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleGeneratePlan = () => {
+  const [apiFoods, setApiFoods] = useState([]);
+  const [foodsLoading, setFoodsLoading] = useState(true);
+  const [foodsError, setFoodsError] = useState(null);
+
+  const foodsAPIURL = "http://127.00.1:8000/api/diet/foods/";
+
+  useEffect(() => {
+    const fetchFoods = async () => {
+      try {
+        const response = await fetch(foodsAPIURL);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        const processedFoods = data.map((food) => ({
+          ...food,
+          category:
+            food.category ||
+            (food.name.includes("Chicken") ||
+            food.name.includes("Salmon") ||
+            food.name.includes("Egg")
+              ? "Protein"
+              : food.name.includes("Rice") ||
+                food.name.includes("Potato") ||
+                food.name.includes("Oats") ||
+                food.name.includes("Bread")
+              ? "Carbohydrate"
+              : food.name.includes("Avocado") ||
+                food.name.includes("Almonds") ||
+                food.name.includes("Olive Oil")
+              ? "Fat"
+              : food.name.includes("Broccoli") ||
+                food.name.includes("Spinach") ||
+                food.name.includes("Salad")
+              ? "Vegetable"
+              : food.name.includes("Banana") ||
+                food.name.includes("Apple") ||
+                food.name.includes("Berries")
+              ? "Fruit"
+              : "Other"),
+        }));
+        setApiFoods(processedFoods);
+      } catch (err) {
+        console.error("Error fetching foods from API:", err);
+        setFoodsError("Failed to load food data. Please try again.");
+      } finally {
+        setFoodsLoading(false);
+      }
+    };
+
+    fetchFoods();
+  }, []);
+
+  const handleGeneratePlan = async () => {
     if (targetCalories <= 0) {
       setGeneratedPlan(null);
+      setError("Target daily calories must be greater than 0.");
       return;
     }
 
-    const proteins = foods.filter((f) => f.category === "Protein");
-    const carbs = foods.filter((f) => f.category === "Carbohydrate");
-    const veggies = foods.filter((f) => f.category === "Vegetable");
+    if (foodsLoading) {
+      alert("Food data is still loading. Please wait.");
+      return;
+    }
+    if (foodsError) {
+      alert("Failed to load food data. Cannot generate plan.");
+      return;
+    }
+    if (apiFoods.length === 0) {
+      alert("No food data available to generate a plan.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    const proteins = apiFoods.filter((f) => f.category === "Protein");
+    const carbs = apiFoods.filter((f) => f.category === "Carbohydrate");
+    const veggies = apiFoods.filter((f) => f.category === "Vegetable");
+    const fats = apiFoods.filter((f) => f.category === "Fat");
+    const fruits = apiFoods.filter((f) => f.category === "Fruit");
 
     if (!proteins.length || !carbs.length || !veggies.length) {
-      alert("Food data is missing for one or more categories.");
+      setError(
+        "Not enough food data in specific categories to generate a balanced plan."
+      );
+      setLoading(false);
       return;
     }
 
@@ -47,10 +124,8 @@ const DietGenerator = () => {
         );
         let foodToAdd;
         if (suitableFoods.length > 0) {
-          // إذا وجدنا أطعمة مناسبة، نختار واحدًا عشوائيًا
           foodToAdd = getRandomItem(suitableFoods);
         } else {
-          // إذا لم نجد، نختار أصغر طعام في الفئة لتجاوز الهدف بأقل قدر ممكن
           foodToAdd = [...category].sort((a, b) => a.calories - b.calories)[0];
         }
 
@@ -60,22 +135,22 @@ const DietGenerator = () => {
         }
       };
 
-      // 1. نبدأ بإضافة عنصر أساسي من كل فئة بحذر
       findAndAddFood(proteins, caloriesPerMeal - currentMealCalories);
       findAndAddFood(carbs, caloriesPerMeal - currentMealCalories);
       findAndAddFood(veggies, caloriesPerMeal - currentMealCalories);
 
-      // 2. الآن نملأ السعرات المتبقية
-      let attempts = 0; // للحماية من الحلقات اللانهائية
+      findAndAddFood(fats, caloriesPerMeal - currentMealCalories);
+      findAndAddFood(fruits, caloriesPerMeal - currentMealCalories);
+
+      let attempts = 0;
       while (currentMealCalories < caloriesPerMeal && attempts < 20) {
         const remainingCalories = caloriesPerMeal - currentMealCalories;
-        // نبحث في كل الأطعمة عن شيء مناسب للمساحة المتبقية
-        const candidateFoods = foods.filter(
+
+        const candidateFoods = apiFoods.filter(
           (food) => food.calories <= remainingCalories
         );
 
         if (candidateFoods.length === 0) {
-          // لا يوجد طعام صغير بما يكفي، نخرج من الحلقة
           break;
         }
 
@@ -85,7 +160,6 @@ const DietGenerator = () => {
         attempts++;
       }
 
-      // 3. نحسب المجاميع النهائية للوجبة
       meal.items.forEach((item) => {
         meal.totals.calories += item.calories;
         meal.totals.protein += item.protein;
@@ -93,7 +167,6 @@ const DietGenerator = () => {
         meal.totals.fats += item.fats;
       });
 
-      // إضافة الوجبة إلى الخطة الكاملة
       newPlan.meals.push(meal);
       newPlan.totals.calories += meal.totals.calories;
       newPlan.totals.protein += meal.totals.protein;
@@ -102,6 +175,7 @@ const DietGenerator = () => {
     }
 
     setGeneratedPlan(newPlan);
+    setLoading(false);
   };
 
   return (
@@ -118,6 +192,7 @@ const DietGenerator = () => {
             id="calories"
             step="50"
             min="1200"
+            max="3000"
             value={targetCalories}
             onChange={(e) => setTargetCalories(parseInt(e.target.value) || 0)}
             className="bg-slate-900 border border-slate-700 rounded-md p-3 w-full text-white text-center text-lg font-bold"
@@ -142,10 +217,27 @@ const DietGenerator = () => {
         </div>
         <button
           onClick={handleGeneratePlan}
-          className="w-full py-3 px-6 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700 transition-colors text-lg">
-          Generate Plan
+          className="w-full py-3 px-6 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700 transition-colors text-lg"
+          disabled={loading || foodsLoading} // تعطيل الزر أثناء تحميل الأطعمة أو توليد الخطة
+        >
+          {foodsLoading
+            ? "Loading Foods..."
+            : loading
+            ? "Generating Plan..."
+            : "Generate Plan"}
         </button>
       </div>
+
+      {foodsError && (
+        <div className="bg-red-900/20 border border-red-700 text-red-300 p-4 rounded-lg mb-6 text-center">
+          Error loading food data: {foodsError}
+        </div>
+      )}
+      {error && (
+        <div className="bg-red-900/20 border border-red-700 text-red-300 p-4 rounded-lg mb-6 text-center">
+          Error generating plan: {error}
+        </div>
+      )}
 
       {generatedPlan && (
         <div className="animate-fade-in">

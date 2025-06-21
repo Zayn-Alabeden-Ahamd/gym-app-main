@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SectionWrapper from "./SectionWrapper";
-import { WORKOUTS, SCHEMES } from "../utils/soliders";
 import Button from "./Button";
+
 function Header(props) {
-  // all the repeated units
   const { index, title, description } = props;
   return (
     <div className="flex flex-col gap-4">
@@ -17,6 +16,7 @@ function Header(props) {
     </div>
   );
 }
+
 function Generator(props) {
   const {
     muscles,
@@ -27,15 +27,20 @@ function Generator(props) {
     setgola,
     updateWorkout,
   } = props;
-  // this state will be aware of showing the menu (open and close)
+
+  const [apiWorkouts, setApiWorkouts] = useState({});
+  const [apiSchemes, setApiSchemes] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [allMuscleGroups, setAllMuscleGroups] = useState([]); // لـ "individual"
+
   const [showModels, setShowModel] = useState(false);
 
   function toggleModel() {
-    // doing (!) with each click
     setShowModel((e) => !e);
   }
+
   function updateMuscle(muscleGroup) {
-    // if muscleGroup exsist in musclue
     if (muscles.includes(muscleGroup)) {
       setMuscles(muscles.filter((val) => val !== muscleGroup));
       return;
@@ -43,7 +48,6 @@ function Generator(props) {
 
     if (muscles.length > 2) return;
 
-    // individual is already an array so we turn the others to array to search in them
     if (poison !== "individual") {
       setMuscles([muscleGroup]);
       setShowModel(false);
@@ -56,6 +60,93 @@ function Generator(props) {
       setShowModel(false);
     }
   }
+
+  useEffect(() => {
+    async function fetchData() {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const workoutsResponse = await fetch(
+          "http://localhost:8000/api/workouts/"
+        );
+        if (!workoutsResponse.ok) {
+          throw new Error(`HTTP error! status: ${workoutsResponse.status}`);
+        }
+        const workoutsData = await workoutsResponse.json();
+
+        const muscleGroupsResponse = await fetch(
+          "http://localhost:8000/api/musclegroups/"
+        );
+        if (!muscleGroupsResponse.ok) {
+          throw new Error(`HTTP error! status: ${muscleGroupsResponse.status}`);
+        }
+        const muscleGroupsData = await muscleGroupsResponse.json();
+        const allMuscleGroupNames = muscleGroupsData.map((mg) => mg.name);
+        setAllMuscleGroups(allMuscleGroupNames);
+
+        const formattedWorkouts = workoutsData.reduce((acc, workoutType) => {
+          if (workoutType.name === "individual") {
+            acc[workoutType.name] = allMuscleGroupNames;
+          } else {
+            const subTypeMuscles = {};
+            workoutType.sub_types.forEach((subType) => {
+              subTypeMuscles[subType.name] = subType.muscles.map((m) => m.name);
+            });
+            acc[workoutType.name] = subTypeMuscles;
+          }
+          return acc;
+        }, {});
+        setApiWorkouts(formattedWorkouts);
+
+        const schemesResponse = await fetch(
+          "http://localhost:8000/api/schemes/"
+        );
+        if (!schemesResponse.ok) {
+          throw new Error(`HTTP error! status: ${schemesResponse.status}`);
+        }
+        const schemesData = await schemesResponse.json();
+        const formattedSchemes = schemesData.reduce((acc, scheme) => {
+          acc[scheme.name] = {
+            repRanges: scheme.repRanges,
+            ratio: scheme.ratio,
+            rest: scheme.rest,
+          };
+          return acc;
+        }, {});
+        setApiSchemes(formattedSchemes);
+      } catch (e) {
+        console.error("Failed to fetch workout data:", e);
+        setError("Failed to load workout options. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <SectionWrapper
+        id={"generate"}
+        header={"Loading..."}
+        title={["Loading", "Data", "..."]}>
+        <p className="text-center text-lg">Loading workout options...</p>
+      </SectionWrapper>
+    );
+  }
+
+  if (error) {
+    return (
+      <SectionWrapper
+        id={"generate"}
+        header={"Error"}
+        title={["Data", "Load", "Failed"]}>
+        <p className="text-center text-red-500 text-lg">{error}</p>
+      </SectionWrapper>
+    );
+  }
+
   return (
     <SectionWrapper
       id={"generate"}
@@ -67,16 +158,16 @@ function Generator(props) {
         description={"select the workout you wish to enjoy"}
       />
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {Object.keys(WORKOUTS).map((type, index) => {
+        {Object.keys(apiWorkouts).map((type, index) => {
           return (
             <button
               onClick={() => {
                 setMuscles([]);
-                setPoison(type); // we are changing the poison to be same as type here
+                setPoison(type);
               }}
               className={
                 "bg-slate-950 border px-4 py-4 rounded-lg duration-200 hover:border-blue-600" +
-                (type === poison // so we can do this (:
+                (type === poison
                   ? "border border-blue-600"
                   : "border border-blue-400")
               }
@@ -90,48 +181,40 @@ function Generator(props) {
       <Header
         index={"02"}
         title={"Lock On Targets"}
-        description={"select the muscles judged for annihelation."}
+        description={"select the muscles judged for annihilation."}
       />
-      <div className="bg-slate-950  border border-solid border-blue-400 rounded-lg flex flex-col">
+      <div className="bg-slate-950 border border-solid border-blue-400 rounded-lg flex flex-col">
         <button
-          onClick={toggleModel} // toggle the menu
+          onClick={toggleModel}
           className="relative p-3 flex items-center justify-center">
           <p className="capitalize">
-            {/* we will .join the array of muscles (if it was not empty) that the user choose in the 
-            paragraph above it using .join() to join the element of the array */}
-            {muscles.length == 0 ? "select muscle groups" : muscles.join(" ")}
+            {muscles.length === 0 ? "select muscle groups" : muscles.join(" ")}
           </p>
-
           <i className="fa-solid absolute right-3 top-1/2 -translate-y-1/2 fa-caret-down "></i>
         </button>
 
         {showModels && (
           <div className="flex flex-col p-3">
-            {/* in WORKOUT we have  individual as array and the rest are objects so we need this : */}
             {(poison === "individual"
-              ? WORKOUTS[poison] // deal with the array
-              : Object.keys(WORKOUTS[poison])
-            ) // make array out of object's keys
-              .map((muscleGroup, i) => {
-                return (
-                  <button
-                    onClick={() => {
-                      updateMuscle(muscleGroup);
-                    }}
-                    // conditionary class {"css" + (Ternary operator) }
-                    className={
-                      "hover:text-blue-400  duration-200" +
-                      (muscles.includes(muscleGroup)
-                        ? " text text-blue-400"
-                        : "")
-                    }
-                    key={i}>
-                    <p className="uppercase">
-                      {muscleGroup.replaceAll("_", " ")}
-                    </p>
-                  </button>
-                );
-              })}
+              ? apiWorkouts[poison] || []
+              : Object.keys(apiWorkouts[poison] || {})
+            ).map((muscleGroup, i) => {
+              return (
+                <button
+                  onClick={() => {
+                    updateMuscle(muscleGroup);
+                  }}
+                  className={
+                    "hover:text-blue-400  duration-200" +
+                    (muscles.includes(muscleGroup) ? " text text-blue-400" : "")
+                  }
+                  key={i}>
+                  <p className="uppercase">
+                    {muscleGroup.replaceAll("_", " ")}
+                  </p>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
@@ -142,7 +225,7 @@ function Generator(props) {
         description={"select your ultimate objective."}
       />
       <div className="grid grid-cols-3 gap-4">
-        {Object.keys(SCHEMES).map((schem, schemIndex) => {
+        {Object.keys(apiSchemes).map((schem, schemIndex) => {
           return (
             <button
               onClick={() => {
@@ -164,4 +247,5 @@ function Generator(props) {
     </SectionWrapper>
   );
 }
+
 export default Generator;

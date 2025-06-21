@@ -11,4 +11,12 @@ urlpatterns = [
     path('register/', views.RegisterView.as_view(), name='auth_register'),
     path('test/', views.testEndPoint, name='test'),
     path('', views.getRoutes),
+    path('diet/NutritionTip/',views.NutritionTipview.as_view()),
+    path('diet/MealPlan/',views.MealPlanview.as_view()),
+    path('diet/Recipe/',views.Recipeview.as_view()),
+    path('diet/foods/',views.Foodview.as_view()),
+    path('exercises/',views.ExerciseListAPIView.as_view(), name='exercise-list'),
+    path('schemes/', views.SchemeList.as_view(), name='scheme-list'),
+    path('workouts/', views.WorkoutTypeList.as_view(), name='workout-type-list'),
+    path('tempos/', views.TempoList.as_view(), name='tempo-list'),
 ]
